@@ -1,0 +1,184 @@
+# オープニング画面
+<MyLayout>:
+    BoxLayout:
+        # size: root.size
+        orientation: "vertical"
+        ActionBar:
+            size_hint: 1,0.1
+            ActionView:
+                ActionPrevious:
+                    title: "PDF編集ツール"
+
+        GridLayout:
+            size: root.size
+            rows: 4
+            cols: 1
+            padding: 200,100,200,100
+            Label: 
+                text: "使用する機能を選択してください"
+            Button:
+                text: "PDF ページ削除"
+                on_press: root.manager.current = "delete"
+            Button:
+                text: "PDF 結合"
+                on_press: root.manager.current = "merge"
+            Button:
+                text: "PDF 一括パスワード付与"
+                on_press: root.manager.current = "pass"
+
+# 処理中ダイアログ
+<Dialog>:
+    BoxLayout:
+        id: id_test
+        size: root.size
+        center: root.center
+        orientation: "vertical"
+        padding: 50,50,50,50
+        Label:
+            id: id_dialog_label
+            size_hint_y:80
+            text: root.dialog_label
+        Button:
+            size_hint_y:20
+            size_hint_x:0.5
+            # pos_hint: {"x":0.25,"top":1}
+            pos_hint: {"center_x":0.5,"center_y":0.5}
+            text: "閉じる"
+            id: id_complete_button
+            disabled: True
+            on_press: root.delete_dialog()
+    ProgressBar:
+        size: root.width/2,100
+        center_x: id_test.center_x
+        center_y: id_test.center_y
+        id: id_pb
+        value: 0
+
+# 削除モード
+<DeletePDF@Widget>:
+    size: root.size
+    BoxLayout:
+        size: root.size
+        orientation: "vertical"
+        ActionBar:
+            size_hint: 1,0.1
+            pos_hint: {"center_x":0.5,"top":1}
+            ActionView:
+                ActionPrevious:
+                    on_press: root.manager.current = "opening"
+                    on_press: app.reset.reset()
+                    title: "PDF ページ削除"
+        BoxLayout:
+            padding: 100,50,100,50
+            orientation: "vertical"
+            Label:
+                markup: True
+                text_size: self.size
+                text: "1. PDF[color=ffff00]'ファイル'[/color]を選択(ドラッグ&ドロップ)"
+            TextInput:
+                id: id_file_path
+                focus: True
+                text: root.file_path
+            Label:
+                text_size: self.size
+                text: "2. 削除するページ番号を入力してください。(例: 2-5,7)"
+            TextInput:
+                id: id_delete_num
+            Label:
+                text_size: self.size
+                text: "3. 保存ファイル名を入力してください。\n※選択ファイルと同一ファイル名は禁止です。(データ上書き防止)"
+            TextInput:
+                id: id_save_file_name
+                text: root.save_name
+
+            Label: #空白
+            Button:
+                text: "ページ削除"
+                id: id_delete_exe_button
+                # on_press: root.delete(id_file_path.text,id_delete_num.text)
+                on_press: root.show_dialog()
+
+# 結合モード
+<MergePDF>:
+    size: root.size
+    BoxLayout:
+        size: root.size
+        orientation: "vertical"
+        ActionBar:
+            size_hint: 1,0.1
+            pos_hint: {"center_x":0.5,"top":1}
+            ActionView:
+                ActionPrevious:
+                    title: "PDF 結合"
+                    on_press: root.manager.current = "opening"
+                    on_press: app.reset.reset()
+        BoxLayout:
+            orientation: "vertical"
+            padding: 100,50,100,50
+            Label:
+                markup: True
+                text_size: self.size
+                text: "1. 結合したいPDFファイルが入った[color=ffff00]'フォルダ'[/color]を選択(ドラッグ&ドロップ)"
+            TextInput:
+                text: root.file_path
+            Label:
+                text_size: self.size
+                text: "2. 結合するPDFファイルリスト(自動入力)\n※先頭のファイルから順に結合されます。任意の順番に並べ替え可能です。"
+            TextInput:
+                id: id_target_file_list
+                # リスト型をString型に変換
+                text: ",".join(root.file_list)
+            Label:
+                text_size: self.size
+                text: "3. 保存ファイル名を入力してください。\n※フォルダ内に同一ファイル名がある場合中止します(データ上書き防止)"
+            TextInput:
+                id: id_save_file_name
+                text: "merge.pdf"
+            Label:
+            Button:
+                text: "結合"
+                id: id_merge_exe_button
+                on_press: root.show_dialog()
+
+# パスワード付与
+<PasswordPDF>:
+    size: root.size
+    BoxLayout:
+        size: root.size
+        orientation: "vertical"
+        ActionBar:
+            size_hint: 1,0.1
+            pos_hint: {"center_x":0.5,"top":1}
+            ActionView:
+                ActionPrevious:
+                    title: "PDF パスワード"
+                    on_press: root.manager.current = "opening"
+                    on_press: app.reset.reset()
+        BoxLayout:
+            orientation: "vertical"
+            padding: 100,50,100,50
+            Label:
+                markup: True
+                text_size: self.size
+                text: "1. パスワード付与したいPDFファイルが入った[color=ffff00]'フォルダ'[/color]をドラッグ&ドロップ"
+            TextInput:
+                text: root.file_path
+            Label:
+                text_size: self.size
+                text: "2. 対象PDFファイルリスト(自動入力)"
+            TextInput:
+                # text: str(root.file_list)
+                id: id_target_file_list
+                text: ",".join(root.file_list)
+            Label:
+                text_size: self.size
+                text: "3. パスワード入力"
+            TextInput:
+                id: id_password_text
+            Label:
+            Button:
+                size_hint: 1,1
+                pos_hint: {"center_x":0.5,"center_y":0.5}
+                text: "実行"
+                id: id_password_exe_button
+                on_press: root.click_pass(id_password_text.text)
