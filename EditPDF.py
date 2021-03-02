@@ -86,12 +86,12 @@ class DeletePDF(Screen):
     # ページ削除
     def delete(self):
         yield 0
-        infile = PdfFileReader(self.file_path, 'rb') 
+        infile = PdfFileReader(self.file_path, 'rb')
         output = PdfFileWriter() 
 
         # 暗号化確認
         check_encrypt(infile)
-        
+
         # 削除ページ番号計算
         page = self.calc_page_num(self.ids.id_delete_num.text)
 
@@ -99,9 +99,8 @@ class DeletePDF(Screen):
         for i in range(infile.getNumPages()):
             if str(i+1) in page:
                 continue
-            else:
-                p = infile.getPage(i) 
-                output.addPage(p)
+            p = infile.getPage(i)
+            output.addPage(p)
 
         # 保存ファイル名
         save_file_name = self.ids.id_save_file_name.text
@@ -262,9 +261,7 @@ class Reset(Widget):
 
 # 暗号化確認
 def check_encrypt(pdf,file_path=""):
-    if file_path == "":
-        pass
-    else:
+    if file_path != "":
         pdf = PdfFileReader(file_path)
     if pdf.isEncrypted == True:
         print("選択PDFにはパスワードがかかっている/保護されているため編集できません。パスワード/保護を解除してください。")
